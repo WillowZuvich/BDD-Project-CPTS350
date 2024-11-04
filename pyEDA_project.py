@@ -32,7 +32,7 @@ def is_prime(num):
         return True
 #end of is_prime()
 
-
+#bdd variables x y and z
 x = bddvars('x', 5)
 y = bddvars('y', 5)
 z = bddvars('z', 5)  
@@ -146,7 +146,7 @@ H_ = None
 
 while H != H_:
     H_ = H
-    H = H_ or (H_.compose(y_to_z) & RR2.compose(x_to_z))
+    H = H_ | (H_.compose(y_to_z) & RR2.compose(x_to_z))
     H.smoothing(z)
 RR2star = H
 
@@ -158,6 +158,6 @@ moon = PRIME | apple
 
 result = ~((~moon).smoothing(x))
 
-print("Let StatementA be ∀u. (P RIM E(u) → ∃v. (EV EN (v) ∧ RR2star(u, v)))"
+print("Let StatementA be ∀u(PRIME(u) → ∃v(EVEN(v) ∧ RR2star(u, v)))")
 print("StatementA is", bool(result))
 
