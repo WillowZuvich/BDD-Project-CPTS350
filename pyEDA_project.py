@@ -139,9 +139,25 @@ test_27_9 = {x[0]: 1, x[1]: 1, x[2] : 0, x[3]: 1, x[4]: 1, y[0]: 0, y[1]: 1, y[2
 
 print("RR2(27,6) is", bool(RR2.restrict(test_27_6)))
 print("RR2(27,9) is", bool(RR2.restrict(test_27_9)))
-                                                        
 
 #create RR2star formula and bdd
+H = RR2
+H_ = None
+
+while H != H_:
+    H_ = H
+    H = H_ or (H_.compose(y_to_z) & RR2.compose(x_to_z))
+    H.smoothing(z)
+RR2star = H
 
 #create StatementA bool formula and bdd
-    
+apple = EVEN & RR2star
+apple.smoothing(y)
+
+moon = PRIME | apple
+
+result = ~((~moon).smoothing(x))
+
+print("Let StatementA be ∀u. (P RIM E(u) → ∃v. (EV EN (v) ∧ RR2star(u, v)))"
+print("StatementA is", bool(result))
+
