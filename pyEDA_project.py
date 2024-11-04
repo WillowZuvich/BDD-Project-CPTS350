@@ -1,5 +1,3 @@
-
-
 from pyeda.inter import *
 
 #convert integer to 5 bit binary rep
@@ -17,7 +15,7 @@ def int_to_bin(num):
         while i < 5:
             new_bin += "0"
             i += 1
-    new_bin = new_bin[::-1]
+    new_bin = new_bin[::-1] #reverse the string
     return new_bin
 #end in_to_bin()
 
@@ -49,7 +47,8 @@ for i in range(32):
             RR_bool = ""
             a = 0
             m = 0
-        
+            
+            #convert i to boolean formula 
             for char in i_str:
                 if char == "1":
                     RR_bool += f"x[{m}]" 
@@ -57,6 +56,8 @@ for i in range(32):
                     RR_bool += f"~x[{m}]"
                 RR_bool += " & " 
                 m += 1
+            
+            #convert j to boolean formula
             for char in j_str:
                 if char == "1":
                     RR_bool += f"y[{a}]"
@@ -65,6 +66,8 @@ for i in range(32):
                 if a < 4:
                     RR_bool += " & "
                 a += 1
+            
+            #join each boolean formula 
             if flag != 0:
                 RR_expr += " | "
             else:
@@ -80,6 +83,7 @@ test_16_20 = {x[0]: 1, x[1]: 0, x[2] : 0, x[3]: 0, x[4]: 0, y[0]: 1, y[1]: 0, y[
 
 print("RR(27,3) is", bool(RR.restrict(test_27_3)))
 print("RR(16,20) is", bool(RR.restrict(test_16_20)))
+
 
 #create even bool formula  and bdd 
 even_bool = ~y[4]
@@ -102,6 +106,7 @@ for i in range(32):
         prime_bool = ""
         m = 0
         
+        #convert i to boolean formula (if prime)
         for char in i_str:
             if char == "1":
                 prime_bool += f"x[{m}]" 
@@ -111,6 +116,7 @@ for i in range(32):
                 prime_bool += " & " 
             m += 1
         
+        #apend bool formula to expression
         if flag != 0:
             prime_expr += " | "
         else:
@@ -126,13 +132,16 @@ test_2 = {x[0]: 0, x[1]: 0, x[2] : 0, x[3]: 1, x[4]: 0}
 print("PRIME(7) is", bool(PRIME.restrict(test_7)))
 print("PRIME(2) is", bool(PRIME.restrict(test_2)))
 
-#create RR2 bool formula and bdd
+#create RR2 bool formula and bdd:
+
+#replacement vars for smoothing
 y_to_z = {y[0] : z[0], y[1] : z[1], y[2] : z[2], y[3] : z[3], y[4] : z[4]}
 x_to_z = {x[0] : z[0], x[1] : z[1], x[2] : z[2], x[3] : z[3], x[4] : z[4]}
 
-RR2 = (RR.compose(y_to_z) & RR.compose(x_to_z))
+#RR o RR
+RR2 = RR.compose(y_to_z) & RR.compose(x_to_z)
 
-RR2.smoothing(z)
+RR2.smoothing(z) #smooth z
                                                          
 test_27_6 = {x[0]: 1, x[1]: 1, x[2] : 0, x[3]: 1, x[4]: 1, y[0]: 0, y[1]: 0, y[2] : 1, y[3]: 1, y[4]: 0}
 test_27_9 = {x[0]: 1, x[1]: 1, x[2] : 0, x[3]: 1, x[4]: 1, y[0]: 0, y[1]: 1, y[2] : 0, y[3]: 0, y[4]: 1}
@@ -151,12 +160,12 @@ while H != H_:
 RR2star = H
 
 #create StatementA bool formula and bdd
-apple = EVEN & RR2star
-apple.smoothing(y)
+apple = EVEN & RR2star  #EVEN(v) ∧ RR2star(u, v)
+apple.smoothing(y)  #∃v(EVEN(v) ∧ RR2star(u, v)))
 
-moon = PRIME | apple
+moon = PRIME | apple # PRIME(u) → ∃v(EVEN(v) ∧ RR2star(u, v))
 
-result = ~((~moon).smoothing(x))
+result = ~((~moon).smoothing(x)) #logically remove for all
 
 print("Let StatementA be ∀u(PRIME(u) → ∃v(EVEN(v) ∧ RR2star(u, v)))")
 print("StatementA is", bool(result))
